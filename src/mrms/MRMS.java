@@ -15,9 +15,9 @@ public class MRMS {
         
 
         //new TestEntry("TCDC");
-        //mainPage.mainGUI();
+        mainPage.mainGUI();
         //LoginGUI.loginStart();
-        PatientEntry.patientEGUI();
+        //PatientEntry.patientEGUI();
     }
     
 }

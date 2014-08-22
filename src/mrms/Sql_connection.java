@@ -24,10 +24,11 @@ public class Sql_connection {
         try {
         Class.forName("com.mysql.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mrmsdb","root","");
+        //Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","");
         return conn;
         }
         catch(Exception e){
-            JOptionPane.showMessageDialog(null,e);
+            JOptionPane.showMessageDialog(null,"SQLConn :\n" + e);
             return null;
         }
     }

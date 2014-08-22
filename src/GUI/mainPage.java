@@ -4,15 +4,26 @@
 
 package GUI;
 
-import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import mrms.Backupdata;
+import mrms.Import;
+import mrms.MySqlToXls;
 
 /*
  * @author Sajag
  */
 public class mainPage extends JFrame {
 int flag;
-DoctorList dlist=new DoctorList();
+public static String filename;
+static File dir = null;
+//DoctorList dlist=new DoctorList();
 public static int for_shift;
     public mainPage() {
         initComponents();
@@ -24,6 +35,7 @@ public static int for_shift;
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenu1 = new javax.swing.JMenu();
         Main_MenuBar = new javax.swing.JMenuBar();
         Main_file = new javax.swing.JMenu();
         Menu_pref = new javax.swing.JMenuItem();
@@ -37,14 +49,20 @@ public static int for_shift;
         Main_AddTest = new javax.swing.JMenuItem();
         Main_users = new javax.swing.JMenu();
         Main_AddUser = new javax.swing.JMenuItem();
-        Main_data = new javax.swing.JMenu();
-        Main_help = new javax.swing.JMenu();
         Main_investigation = new javax.swing.JMenu();
         cat_entry = new javax.swing.JMenuItem();
         cat_view = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         viewInv = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        Main_data = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        Main_excel = new javax.swing.JMenuItem();
+        Main_sql = new javax.swing.JMenuItem();
+        Main_import = new javax.swing.JMenuItem();
+        Main_help = new javax.swing.JMenu();
+
+        jMenu1.setText("jMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MRMS");
@@ -133,12 +151,6 @@ public static int for_shift;
 
         Main_MenuBar.add(Main_users);
 
-        Main_data.setText("Data");
-        Main_MenuBar.add(Main_data);
-
-        Main_help.setText("Help");
-        Main_MenuBar.add(Main_help);
-
         Main_investigation.setText("Investigations");
 
         cat_entry.setText("Add new Department");
@@ -176,6 +188,41 @@ public static int for_shift;
 
         Main_MenuBar.add(Main_investigation);
 
+        Main_data.setText("Data");
+
+        jMenu2.setText("Backup data");
+
+        Main_excel.setText("Excel Files");
+        Main_excel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Main_excelActionPerformed(evt);
+            }
+        });
+        jMenu2.add(Main_excel);
+
+        Main_sql.setText("Single File");
+        Main_sql.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Main_sqlActionPerformed(evt);
+            }
+        });
+        jMenu2.add(Main_sql);
+
+        Main_data.add(jMenu2);
+
+        Main_import.setText("Import data");
+        Main_import.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Main_importActionPerformed(evt);
+            }
+        });
+        Main_data.add(Main_import);
+
+        Main_MenuBar.add(Main_data);
+
+        Main_help.setText("Help");
+        Main_MenuBar.add(Main_help);
+
         setJMenuBar(Main_MenuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -186,7 +233,7 @@ public static int for_shift;
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 372, Short.MAX_VALUE)
+            .addGap(0, 374, Short.MAX_VALUE)
         );
 
         pack();
@@ -223,6 +270,9 @@ public static int for_shift;
 
     private void Main_DocListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_DocListActionPerformed
         for_shift=1;
+        
+       DoctorList dlist=new DoctorList();
+       //dlist.dlt=dlist;
         dlist.setVisible(true);
     }//GEN-LAST:event_Main_DocListActionPerformed
 
@@ -241,6 +291,88 @@ public static int for_shift;
     private void viewInvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewInvActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_viewInvActionPerformed
+
+    private void Main_excelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_excelActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+
+        fileChooser.setFileSelectionMode(
+        JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setCurrentDirectory(dir);
+        int option = fileChooser.showSaveDialog(null);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File f = fileChooser.getSelectedFile();
+    // if the user accidently click a file, then select the parent directory.
+            if (!f.isDirectory()) {
+                 f = f.getParentFile();
+            }
+            filename=f.getAbsolutePath();
+            dir = f.getParentFile();
+        //System.out.println("Selected directory for import " + f);
+         MySqlToXls my=new MySqlToXls();
+         my.mysqlmain();
+    }
+    }//GEN-LAST:event_Main_excelActionPerformed
+
+    private void Main_sqlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_sqlActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(
+        JFileChooser.FILES_AND_DIRECTORIES);
+        FileFilter filter = new FileNameExtensionFilter("SQL file", new String[] {"sql"});
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.addChoosableFileFilter(filter);
+        fileChooser.setFileFilter(filter);
+        fileChooser.setCurrentDirectory(dir);
+        int option = fileChooser.showSaveDialog(null);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            
+            File f = fileChooser.getSelectedFile();
+        // if the user accidently click a file, then select the parent directory.
+            String fn = f.getAbsolutePath();
+            dir = f.getParentFile();
+            addSQL(fn);
+        //System.out.println("Selected directory for import " + f);
+            Backupdata b=new Backupdata();
+            try {
+                b.back();
+            } catch (IOException ex) {
+                Logger.getLogger(mainPage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+    }//GEN-LAST:event_Main_sqlActionPerformed
+
+    private void Main_importActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_importActionPerformed
+        if(JOptionPane.showConfirmDialog(null, "Database will be overwritten.\nUnsaved data will be lost.\nContinue import?","Import Data",JOptionPane.OK_CANCEL_OPTION) == 0) {    
+            JFileChooser fileChooser = new JFileChooser();
+
+            fileChooser.setFileSelectionMode(
+            JFileChooser.FILES_AND_DIRECTORIES);
+            FileFilter filter = new FileNameExtensionFilter("SQL file", new String[] {"sql"});
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.addChoosableFileFilter(filter);
+            fileChooser.setFileFilter(filter);
+            fileChooser.setCurrentDirectory(dir);
+            int option = fileChooser.showDialog(null,"Import");
+
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File f = fileChooser.getSelectedFile();
+            // if the user accidently click a file, then select the parent directory.
+                filename=f.getAbsolutePath();
+                dir = f.getParentFile();
+            //System.out.println("Selected directory for import " + f);
+                Import b=new Import();
+                try {
+                    b.importdata();
+                } 
+                catch (IOException ex) {
+                    Logger.getLogger(mainPage.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_Main_importActionPerformed
 
    
     public static void mainGUI() {
@@ -277,6 +409,13 @@ public static int for_shift;
         });
     }
 
+    
+    public void addSQL(String fn){
+        if(fn.contains(".sql")) return;
+        filename = fn + ".sql";
+    }
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Main_AddTest;
     private javax.swing.JMenuItem Main_AddUser;
@@ -286,18 +425,23 @@ public static int for_shift;
     private javax.swing.JMenuItem Main_PEntry;
     private javax.swing.JMenu Main_data;
     private javax.swing.JMenu Main_doctor;
+    private javax.swing.JMenuItem Main_excel;
     private javax.swing.JMenu Main_file;
     private javax.swing.JMenu Main_help;
+    private javax.swing.JMenuItem Main_import;
     private javax.swing.JMenu Main_investigation;
     private javax.swing.JMenu Main_patient;
     private javax.swing.JMenu Main_report;
+    private javax.swing.JMenuItem Main_sql;
     private javax.swing.JMenu Main_users;
     private javax.swing.JMenuItem Menu_exit;
     private javax.swing.JMenuItem Menu_pref;
     private javax.swing.JMenuItem cat_entry;
     private javax.swing.JMenuItem cat_view;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem viewInv;
     // End of variables declaration//GEN-END:variables
 }
