@@ -4,6 +4,7 @@ package mrms;
 import GUI.mainPage;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 
@@ -22,8 +23,21 @@ public class Import {
     private static String dbName = "mrmsdb";
     
     public void importdata() throws IOException {
-        conn=Sql_connection.connecrDb();
+        conn=connecrDb();
         createMySqlDb();       
+    }
+    
+    public static Connection connecrDb(){
+        try {
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","");
+        //Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","");
+        return conn;
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null,"SQLConn :\n" + e);
+            return null;
+        }
     }
     
      public static void createMySqlDb(){

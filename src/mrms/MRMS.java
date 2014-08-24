@@ -13,9 +13,9 @@ public class MRMS {
          */
         TestType.fillCat();
         
-
+        new ApntGUI("1","Deepak Mahara");
         //new TestEntry("TCDC");
-        mainPage.mainGUI();
+        //mainPage.mainGUI();
         //LoginGUI.loginStart();
         //PatientEntry.patientEGUI();
     }

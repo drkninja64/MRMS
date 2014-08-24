@@ -286,72 +286,7 @@ public class Shift extends javax.swing.JFrame {
         this.dispose();
         
     }
-    
-   /* public void add_sh(){
-        String dcode =  DID.getText();
-        String day   =  Shift_day.getSelectedItem().toString();
-        String start =  Shift_start.getText();
-        String end   =  Shift_end.getText();
-        
-        if(start.equals("") || end.equals("")){
-            JOptionPane.showMessageDialog(null,"Shift times cannot be empty","Null Entry",JOptionPane.ERROR_MESSAGE);
-            return;
-        }            
-        //Previous data preservation
-        Object[][] temp = new Object[DoctorEntry.data.length+1][3];
-        for(int i=0;i<DoctorEntry.data.length;i++){
-            for(int j=0;j<3;j++){
-                //JOptionPane.showMessageDialog(null,DoctorEntry.data[i][j]);
-                if(DoctorEntry.data[i][0].equals(day)) {
-                    JOptionPane.showMessageDialog(null,"Shift days cannot be repeated","Invalid Entry",JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                temp[i][j]=DoctorEntry.data[i][j];
-            }
-        }
-        temp[DoctorEntry.data.length][0] = day;
-        temp[DoctorEntry.data.length][1] = start;
-        temp[DoctorEntry.data.length][2] = end;
-        DoctorEntry.data=temp;
-        DoctorEntry.setTableData();
-        this.dispose();
-         String dcode =  DID.getText();
-        String day   =  Shift_day.getSelectedItem().toString();
-        String start =  Shift_start.getText();
-        String end   =  Shift_end.getText();
-        Object [][] temp = new Object[0][3];*/
-       // Object[][] temp1=new Object[DoctorEntry.var+1][3];
-       /* for(int i=DoctorEntry.var;i<DoctorEntry.var+1;i++){
-            for(int j=0;j<3;j++){*/
-           /*     try{
-                //  System.out.println("hmm");  
-                String sql="Select * from shifttable where DCode=?";
-                pst=conn.prepareStatement(sql);
-                pst.setInt(1, Integer.parseInt(dcode));
-                rs=pst.executeQuery();
-                while(rs.next()){
-                if((rs.getString("Day")).equals(day)){
-                    JOptionPane.showMessageDialog(null,"Shift already exists");
-                }
-                else{
-                    DoctorEntry.data[DoctorEntry.var][0]=day;
-                     DoctorEntry.data[DoctorEntry.var][1]=start;
-                      DoctorEntry.data[DoctorEntry.var][2]=end;
-                }
-                }
-                }
-                catch(SQLException | NumberFormatException | HeadlessException e){ JOptionPane.showMessageDialog(null,e);}
-                finally{try{rs.close(); pst.close();}catch(Exception e){}}
-                if(DoctorEntry.sh_add==1){
-                    DoctorEntry.var++;
-                }
-                
-            //}
-       // }
-        DoctorEntry.setTableData();
-        this.dispose();
-    }*/
-
+ 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField DID;
     private javax.swing.JButton Shift_Cancel;

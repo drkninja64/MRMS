@@ -5,6 +5,7 @@
  */
 
 package mrms;
+import GUI.ApntGUI;
 import GUI.DoctorEntry;
 import GUI.DoctorList;
 import GUI.mainPage;
@@ -18,6 +19,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 
 /**
@@ -29,18 +32,87 @@ public class Doctor {
     ResultSet rs=null;
     PreparedStatement pst=null;
     ResultSet rss=null;
-                        PreparedStatement pst1=null;
-    
- 
+    PreparedStatement pst1=null;
     Object[][] data = new Object[0][3];
+    static Object[][] data_search=new Object[0][4];
     
-
-    
+    /**
+     * 
+     */
     public Doctor(){
         conn=mrms.Sql_connection.connecrDb();
        // data=null;
     }
-     
+    
+    /**
+     * Sets up shift data for Doctor
+     * @param dcode Doctor's code
+     * @return 
+     */
+    public boolean getDays(int dcode){
+        int n, i = 0;
+        String sql;
+        n = Integer.parseInt(countshift(Integer.toString(dcode)));
+        Object[][] temp = new Object[3][n];
+        try{
+            sql = "SELECT * FROM shifttable WHERE DCode = (?)";
+            pst=conn.prepareStatement(sql);
+            pst.setInt(1,dcode);
+            rs = pst.executeQuery();
+            while(rs.next()){
+                temp[0][i] = rs.getString("Day");
+                temp[1][i] = SetFormat.getTimeStyle(rs.getTime("Shift_start").toString());
+                temp[2][i] = SetFormat.getTimeStyle(rs.getTime("Shift_end").toString());
+                i++;
+            }
+            ApntGUI.Shifts = temp;
+            return true;
+        }
+        catch(Exception e) {
+            JOptionPane.showMessageDialog(null,"set shift data in apnt:\n" + e);
+        }
+        finally{
+            try{
+            rs.close();
+            pst.close();
+        }
+            catch(Exception e){}
+        }
+        return false;
+    }
+    
+    /**
+     * Gets DCode for given name
+     * @param name Doctor's name
+     */
+    public int getDCode(String name){
+        String sql;
+        try{
+            sql = "SELECT DCode AS did FROM doctor WHERE DName = (?)";
+            pst=conn.prepareStatement(sql);
+            pst.setString(1,name);
+            rs = pst.executeQuery();
+            rs.next();
+            return rs.getInt("did");
+        }
+        catch(Exception e) {
+            JOptionPane.showMessageDialog(null,"getdcode\n" + e);
+        }
+        return 0;
+    }
+    
+    /**
+     * 
+     * @param de
+     * @param dcode1
+     * @param dname1
+     * @param dqual1
+     * @param dwork1
+     * @param dcontact1
+     * @param demail1
+     * @param dshift
+     * @return 
+     */
     public int saveaction(JFrame de,String dcode1,String dname1,String dqual1,String dwork1,String dcontact1,String demail1,String dshift){
         //Null Value Check
         if(dname1.equals("") || dqual1.equals("") || dwork1.equals("")){
@@ -87,8 +159,13 @@ public class Doctor {
         return 0;
     }
      
-    
-    //Shift Entry
+    /**
+     * 
+     * @param dcode
+     * @param day
+     * @param start
+     * @param end 
+     */
     public void shiftEntry(String dcode,String day,String start,String end){
         try{
             String sql="Insert into shifttable(DCode,Day,Shift_start,Shift_end) value(?,?,?,?)";
@@ -135,7 +212,13 @@ public class Doctor {
         }
         return "";  
         } 
-        public String countshift(String id){
+    
+    /**
+     * Returns no of shifts for a doctor
+     * @param id Doctor ID
+     * @return 
+     */
+    public String countshift(String id){
         try{
             String sql1="SELECT COUNT(DCode) AS count FROM shifttable where DCode=?";
           
@@ -155,11 +238,13 @@ public class Doctor {
             catch(Exception e){}
         }
        return "";  
-     } 
-        
-     
-        
-     public void view_doc_info(String id){
+    } 
+    
+    /**
+     * 
+     * @param id 
+     */
+    public void view_doc_info(String id){
        
            try{
             Object[][] temp1 = new Object[0][3];
@@ -215,11 +300,23 @@ public class Doctor {
             }
             catch(Exception e){}
         }
-     }
-     
-   public int save_edited(JFrame de,String dcode1,String dname1,String dqual1,String dwork1,String dcontact1,String demail1){
-       int shif = 0;
-      if(dname1.equals("") || dqual1.equals("") || dwork1.equals("")){
+    }
+    
+    /**
+     * 
+     * @param de
+     * @param dcode1
+     * @param dname1
+     * @param dqual1
+     * @param dwork1
+     * @param dcontact1
+     * @param demail1
+     * @return 
+     */
+    
+    public int save_edited(JFrame de,String dcode1,String dname1,String dqual1,String dwork1,String dcontact1,String demail1){
+        int shif = 0;
+        if(dname1.equals("") || dqual1.equals("") || dwork1.equals("")){
             String msg = "Must enter values in following fields :";
             if(dname1.equals(""))   msg = msg + "\nName";
             if(dqual1.equals(""))   msg = msg + "\nQualifications";
@@ -227,42 +324,45 @@ public class Doctor {
             JOptionPane.showMessageDialog(null,msg,"Invalid Entry",JOptionPane.ERROR_MESSAGE);
             return 1; //Could not save
         }
-      try{
-          String sql="Select * from doctor where DCode=?";
-          pst=conn.prepareStatement(sql);
-          pst.setInt(1, Integer.parseInt(dcode1));
-          rs=pst.executeQuery();
-          if(rs.next()){
-              if(DoctorEntry.var!=0){
-                  shif=1;
-              }else{shif=0;}
-              String sqll="Update doctor set DName='"+dname1+"',DQual='"+dqual1+"',DWork='"+dwork1+"',DContact='"+dcontact1+"',DEmail='"+demail1+"',Shift='"+shif+"' where DCode='"+Integer.parseInt(dcode1)+"'";
-              pst1=conn.prepareStatement(sqll);
-              pst1.execute();
-              JOptionPane.showMessageDialog(null, "Information Updatated");
-              de.dispose();
-             //mainPage.for_shift=1;
-        //DoctorList dlist=new DoctorList();
-       // dlist.setVisible(true);
-          }
-      }
-      catch(NumberFormatException | SQLException e){
-            
+        try{
+            String sql="Select * from doctor where DCode=?";
+            pst=conn.prepareStatement(sql);
+            pst.setInt(1, Integer.parseInt(dcode1));
+            rs=pst.executeQuery();
+            if(rs.next()){
+                if(DoctorEntry.var!=0){
+                    shif=1;
+                }else{shif=0;}
+                String sqll="Update doctor set DName='"+dname1+"',DQual='"+dqual1+"',DWork='"+dwork1+"',DContact='"+dcontact1+"',DEmail='"+demail1+"',Shift='"+shif+"' where DCode='"+Integer.parseInt(dcode1)+"'";
+                pst1=conn.prepareStatement(sqll);
+                pst1.execute();
+                JOptionPane.showMessageDialog(null, "Information Updatated");
+                de.dispose();
+                //mainPage.for_shift=1;
+                //DoctorList dlist=new DoctorList();
+                // dlist.setVisible(true);
+            }
+        }
+        catch(NumberFormatException | SQLException e){
             JOptionPane.showMessageDialog(null,e);
-            
-        }finally{
+        }
+        finally{
             try{
             rs.close();
             pst.close();
-        }
+            }
             catch(Exception e){}
         }
         return 0 ;
     }
    
-   
- 
-    
+    /**
+     * 
+     * @param dcode1
+     * @param day1
+     * @param start1
+     * @param end1 
+     */
     public void insert_update(String dcode1,String day1,String start1,String end1){
         PreparedStatement pst2=null;
         int upflag=0;
@@ -271,7 +371,7 @@ public class Doctor {
             pst=conn.prepareStatement(sql);
             pst.setInt(1, Integer.parseInt(dcode1));
             rs=pst.executeQuery();
-           while(rs.next()){
+            while(rs.next()){
                 if((rs.getString("Day").equals(day1))){
                     upflag=1;
                 }
@@ -281,9 +381,9 @@ public class Doctor {
                    String sqll="Update shifttable set Shift_start='"+start1+"',Shift_end='"+end1+"' where DCode="+Integer.parseInt(dcode1)+" and Day='"+day1+"'";
                      pst1=conn.prepareStatement(sqll);
                      pst1.execute();
-                    System.out.println("hmm1");
+                    //System.out.println("hmm1");
                 }else{
-                    System.out.println("hmm2");
+                    //System.out.println("hmm2");
                     String sql1="Insert into shifttable (DCode,Day,Shift_start,Shift_end) value (?,?,?,?)";
                     pst2=conn.prepareStatement(sql1);
                     pst2.setInt(1,Integer.parseInt(dcode1));
@@ -292,19 +392,134 @@ public class Doctor {
                     pst2.setString(4,end1);
                     pst2.execute();
                 }
-                  
-                  
-                
-                   
-                    
-                
-            
         }
         catch( SQLException e){
             JOptionPane.showMessageDialog(null,e);
-        }finally{try{rs.close(); pst.close();}catch(SQLException e){}}
+        }
+        finally{
+            try{
+                rs.close(); 
+                pst.close();
+            }
+            catch(SQLException e){}
+        }
     }
 
+    
+    
+    public void search_name(String docname,JTable table){
+       try{
+            int length=Integer.valueOf(countDoc2(docname));
+            data_search = new Object [length][4];
+            String day="";
+            String sql="Select * from doctor where DName like '"+docname+"%'";
+            pst=conn.prepareStatement(sql);
+            rs=pst.executeQuery();
+            //rs.next();
+            for(int i=0; i<length; i++){
+                    rs.next();
+                    data_search[i][0] = rs.getInt("DCode");
+                    data_search[i][1] = rs.getString("DName");
+                    data_search[i][2] = rs.getString("DQual");
+                    if(rs.getInt("Shift")==1){
+                        sql="Select Day From shifttable where Dcode=?";
+                        pst1=conn.prepareStatement(sql);
+                        pst1.setInt(1, rs.getInt("DCode"));
+                        rss=pst1.executeQuery();
+                        while(rss.next()){
+                            day = day + rss.getString("Day") + ", ";
+                        }                 
+                       day = day.substring(0, day.length()-2);
+                        data_search[i][3] = day;
+                        day = "";
+                    }
+                    else data_search[i][3] = " - ";                    
+            }
+            setTableData(table);
+        }catch(NumberFormatException | SQLException e){
+            JOptionPane.showMessageDialog(null,e);
+        }finally{try{pst.close(); rs.close(); }catch(SQLException e){}} 
+    }
+    
+    public void search_id(String docid,JTable table){
+        try{
+            int length=Integer.valueOf(countDoc1(docid));
+            //System.out.println(""+length);
+             data_search = new Object [length][4];
+             String day="";
+            String sql="Select * from doctor where DCode like '"+Integer.parseInt(docid)+"%'";
+            pst=conn.prepareStatement(sql);
+            rs=pst.executeQuery();
+            //rs.next();
+            for(int i=0; i<length; i++){
+                    rs.next();
+                    data_search[i][0] = rs.getInt("DCode");
+                    data_search[i][1] = rs.getString("DName");
+                    data_search[i][2] = rs.getString("DQual");
+                    if(rs.getInt("Shift")==1){
+                        sql="Select Day From shifttable where Dcode=?";
+                        pst1=conn.prepareStatement(sql);
+                        pst1.setInt(1, rs.getInt("DCode"));
+                        rss=pst1.executeQuery();
+                        while(rss.next()){
+                            day = day + rss.getString("Day") + ", ";
+                        }                 
+                       day = day.substring(0, day.length()-2);
+                        data_search[i][3] = day;
+                        day = "";
+                    }
+                    else data_search[i][3] = " - ";                    
+            }
+            setTableData(table);
+        }catch(NumberFormatException | SQLException e){
+            JOptionPane.showMessageDialog(null,e);
+        }finally{try{pst.close(); rs.close(); }catch(SQLException e){}}
+        
+    }
+    
+     public static void setTableData(JTable table){
+        table.setModel(new DefaultTableModel(data_search,new String[]{"ID","Name","Qualification","Days"}){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; //all cells false
+            }
+        });
+        table.setVisible(true);
+    }
+    
+    
+    public String countDoc1(String docid){
+        try{
+            String sql1="Select COUNT(DCode) AS count FROM doctor where DCode like '"+Integer.parseInt(docid)+"%'";
+            pst=conn.prepareStatement(sql1);
+            rs=pst.executeQuery();
+            rs.next();
+            //System.out.println(Integer.parseInt(rs.getString("count")));
+            return rs.getString("count");
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        }finally{try{rs.close(); pst.close();}catch(Exception e){}}
+        return "";
+    }
+    
+     public String countDoc2(String docname){
+        try{
+            String sql1="Select COUNT(DName) AS count FROM doctor where DName like '"+docname+"%'";
+            pst=conn.prepareStatement(sql1);
+            rs=pst.executeQuery();
+            rs.next();
+            //System.out.println(Integer.parseInt(rs.getString("count")));
+            return rs.getString("count");
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        }finally{try{rs.close(); pst.close();}catch(Exception e){}}
+        return "";
+    }
+    
+    
+    
 }
     
 

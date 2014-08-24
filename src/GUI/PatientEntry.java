@@ -500,7 +500,7 @@ public class PatientEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_PE_FemaleBActionPerformed
 
     private void PE_AppointBNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PE_AppointBNActionPerformed
-        
+        new ApntGUI(PE_Code.getText(), PE_DList.getSelectedItem().toString());
     }//GEN-LAST:event_PE_AppointBNActionPerformed
 
     private void PE_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PE_CancelActionPerformed

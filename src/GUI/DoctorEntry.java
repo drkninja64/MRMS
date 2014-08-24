@@ -5,18 +5,15 @@
  */
 
 package GUI;
-import GUI.mainPage;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import mrms.Doctor;
+import mrms.SetFormat;
 import mrms.Sql_connection;
 
 /**
@@ -445,8 +442,7 @@ static int sh_add;
     }//GEN-LAST:event_DE_EditKeyPressed
 
     private void DE_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DE_SaveActionPerformed
-
-            saveData();
+        saveData();
     }//GEN-LAST:event_DE_SaveActionPerformed
 
     private void DE_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DE_CancelActionPerformed
@@ -566,17 +562,17 @@ static int sh_add;
     }
 
     /**
-     * Resets Table according to data
+     * Resets table view
+     * @return 
      */
-        public static void setTableData(){
+    public static void setTableData(){
         DE_ShTable.setModel(new DefaultTableModel(data,new String[]{"Day","Start time","End Time"}){
             @Override
             public boolean isCellEditable(int row, int column) {
             return false; //all cells false
-    }
+            }
         });
-        DE_ShTable.setVisible(true);
-      
+        DE_ShTable.setVisible(true); 
     }
     
     public void saveData(){
@@ -606,9 +602,9 @@ static int sh_add;
           for(int i=0;i<var;i++){
               
               String day1=(data[i][0]).toString();
-              String start1=setTimeFormat(data[i][1].toString());
+              String start1=SetFormat.setTimeStyle(data[i][1].toString());
              
-              String end1=setTimeFormat(data[i][2].toString());
+              String end1=SetFormat.setTimeStyle(data[i][2].toString());
               
              dc.insert_update(dcode1,day1,start1,end1);
               }
@@ -621,8 +617,9 @@ static int sh_add;
         if(dshift.equals("1") && ok==0) {
             for(int i=0;i<DE_ShTable.getRowCount();i++){
                 //JOptionPane.showMessageDialog(null,"Yes");
-                doc.shiftEntry(dcode1,data[i][0].toString(),setTimeFormat(data[i][1].toString()),setTimeFormat(data[i][2].toString()));
-                }
+                doc.shiftEntry(dcode1,data[i][0].toString(),SetFormat.setTimeStyle(data[i][1].toString()),SetFormat.setTimeStyle(data[i][2].toString()));
+                DoctorList.setTableData();
+            }
         }
        }
     }
@@ -667,20 +664,6 @@ static int sh_add;
             }
         }
     
-    }
-    
-    public static String setTimeFormat(String t){
-        String str=null;
-        String[] s1 = t.split(" ") , s2 = s1[0].split(":");
-        int b = Integer.parseInt(s2[0]);
-        if(s1[1].equals("AM") && b==12){
-            b = 0;
-        }
-        else if (s1[1].equals("PM") && b != 12) {
-            b += 12;
-        }
-        str = Integer.toString(b)+":"+ s2[1] +":00";
-        return str;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

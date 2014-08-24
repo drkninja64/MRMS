@@ -34,17 +34,19 @@ public class DoctorList extends javax.swing.JFrame {
     static int len = 0;
     static Object[][] data = new Object[0][4];
     static Doctor doc = new Doctor();
-   
+   public DoctorList dlt;
     
     /**
      * Creates new form DoctorList
      */
     public DoctorList() {
         initComponents();
+        setLocationRelativeTo(null);
         conn=Sql_connection.connecrDb();
         len = findLength() - 1;
         fillData();
         viewData();
+        setTableData();
     }
     
     public void close(){
@@ -64,18 +66,14 @@ public class DoctorList extends javax.swing.JFrame {
            
             if (me.getClickCount() == 2) {
                 String id=(VD_Table.getValueAt(row, 0)).toString(); 
-                
-                
-                //close();
-                Doctor doc1 = new Doctor();
+                Doctor doc1=new Doctor();
                 doc1.view_doc_info(id);
-        
-        }
+            }
         }
        
     });
     }
-    
+
     public static void setTableData(){
         VD_Table.setModel(new DefaultTableModel(data,new String[]{"ID","Name","Qualification","Days"}){
             @Override
@@ -136,25 +134,51 @@ public class DoctorList extends javax.swing.JFrame {
         VD_SearchPNL = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         VD_DocID = new javax.swing.JTextField();
-        VD_SearchBN = new javax.swing.JButton();
         VD_Name = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         VD_list = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         VD_Table = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Doctor's List");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
+        addWindowStateListener(new java.awt.event.WindowStateListener() {
+            public void windowStateChanged(java.awt.event.WindowEvent evt) {
+                formWindowStateChanged(evt);
+            }
+        });
 
         VD_SearchPNL.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search Area", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 2, 12))); // NOI18N
 
         jLabel2.setText("Name:");
 
-        VD_SearchBN.setText("Search");
+        VD_DocID.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                VD_DocIDKeyReleased(evt);
+            }
+        });
+
+        VD_Name.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                VD_NameKeyReleased(evt);
+            }
+        });
 
         jLabel1.setText("ID:");
+
+        jButton1.setText("Refresh");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout VD_SearchPNLLayout = new javax.swing.GroupLayout(VD_SearchPNL);
         VD_SearchPNL.setLayout(VD_SearchPNLLayout);
@@ -167,10 +191,13 @@ public class DoctorList extends javax.swing.JFrame {
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(VD_SearchPNLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(VD_DocID, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(VD_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 332, Short.MAX_VALUE)
-                .addComponent(VD_SearchBN, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(VD_SearchPNLLayout.createSequentialGroup()
+                        .addComponent(VD_DocID, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(VD_SearchPNLLayout.createSequentialGroup()
+                        .addComponent(VD_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 352, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         VD_SearchPNLLayout.setVerticalGroup(
@@ -179,12 +206,12 @@ public class DoctorList extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(VD_SearchPNLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(VD_DocID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(VD_SearchBN))
+                    .addComponent(VD_DocID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(VD_SearchPNLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(VD_Name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(VD_Name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
                 .addContainerGap(13, Short.MAX_VALUE))
         );
 
@@ -234,13 +261,6 @@ public class DoctorList extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jButton1.setText("Refresh");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -250,11 +270,8 @@ public class DoctorList extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(VD_SearchPNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 8, Short.MAX_VALUE))
-                    .addComponent(VD_list, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                        .addGap(0, 11, Short.MAX_VALUE))
+                    .addComponent(VD_list, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -264,19 +281,51 @@ public class DoctorList extends javax.swing.JFrame {
                 .addComponent(VD_SearchPNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(VD_list, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        DoctorList d=new DoctorList();
+       DoctorList d=new DoctorList();
         this.dispose();
         d.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void VD_DocIDKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_VD_DocIDKeyReleased
+        VD_Name.setText("");
+        String docid=VD_DocID.getText();
+        if(docid.equals("")){
+            len = findLength() - 1;
+            fillData();
+        }else{
+        Doctor d=new Doctor();
+        table=VD_Table;
+        d.search_id(docid,table);
+        }
+    }//GEN-LAST:event_VD_DocIDKeyReleased
+
+    private void VD_NameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_VD_NameKeyReleased
+        VD_DocID.setText("");
+        String docname=VD_Name.getText();
+        if(docname.equals("")){
+            len = findLength() - 1;
+            fillData();
+        }else{
+            Doctor d=new Doctor();
+            table=VD_Table;
+            d.search_name(docname,table);
+        }
+    }//GEN-LAST:event_VD_NameKeyReleased
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        setTableData();
+    }//GEN-LAST:event_formWindowActivated
+
+    private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
+        setTableData();
+    }//GEN-LAST:event_formWindowStateChanged
 
     public static void docViewGUI() {
         /* Set the Nimbus look and feel */
@@ -314,7 +363,6 @@ public class DoctorList extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField VD_DocID;
     private javax.swing.JTextField VD_Name;
-    private javax.swing.JButton VD_SearchBN;
     private javax.swing.JPanel VD_SearchPNL;
     private static javax.swing.JTable VD_Table;
     private javax.swing.JPanel VD_list;
@@ -323,4 +371,7 @@ public class DoctorList extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
+public static String id;
+public static String doc_name;
+public static JTable table;
 }
