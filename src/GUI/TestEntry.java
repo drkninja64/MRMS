@@ -19,6 +19,7 @@ public class TestEntry extends javax.swing.JFrame {
     public TestEntry(int a){}
     public TestEntry(String name){
             initialize();
+            TestType.fillCat();
             TE_edit.setVisible(true);
             edit_window = true;
             fillData(name);

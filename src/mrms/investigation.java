@@ -1,6 +1,7 @@
 package mrms;
 
 import GUI.TestEntry;
+import GUI.TestSel;
 import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -144,6 +145,32 @@ public class investigation {
         return false;
     }
 
+    public boolean fillTest(DefaultListModel model, String Cat){
+        boolean i = false;
+        int cn = getCNo(Cat);
+        model.removeAllElements();
+        try{
+            String name, sql="Select Name from investigations where CNo=?";
+            pst=conn.prepareStatement(sql);
+            pst.setInt(1,cn);
+            rs=pst.executeQuery();
+            while(rs.next()){
+               i = true;
+               name=rs.getString("Name");
+               model.addElement(name);
+            }
+            return i;
+        }
+        catch(SQLException e){}
+        finally{
+            try{
+            rs.close();
+            pst.close();
+            }
+            catch(SQLException e){}
+        }
+        return false;
+    }
     
     public String getCName(int Cno){
         String sql, cname;
@@ -222,6 +249,25 @@ public class investigation {
        return "";  
     }
 
+    public int getNoTests(){
+        try{
+            String sql="SELECT COUNT(Name) AS count FROM investigations";
+            pst=conn.prepareStatement(sql);
+            rs=pst.executeQuery();
+            rs.next();
+            return Integer.parseInt(rs.getString("count"));
+        }
+        catch(Exception e){}
+        finally{
+            try{
+                rs.close();
+                pst.close();
+            }
+            catch(Exception e){}
+        }
+       return 0;  
+    }
+  
     public int countSample(){
         int l = 0;
         String sql;
@@ -244,37 +290,6 @@ public class investigation {
         return l;   
     }
 
-    /**
-    public void setData(int l){
-        String[] a = new String[0];
-        SampleList s = new SampleList(0);
-        int i = 0;
-        String name, sql;
-        
-        try{
-            sql="Select * from samplename";
-            pst=conn.prepareStatement(sql);
-            rs=pst.executeQuery();
-            a = new String[l];
-            while(rs.next()){
-               name=rs.getString("name");
-               a[i] = name;
-               i++;
-            }
-            //JOptionPane.showMessageDialog(null,"Data = " + a[2]);
-        }
-        catch(SQLException e){JOptionPane.showMessageDialog(null, e);}
-        finally{
-            try{
-                rs.close();
-                pst.close();
-            }
-            catch(Exception e){}
-        }
-        s.data = a;
-    }
- */   
-    
     public boolean fillSample(DefaultListModel model){
         int i = 0;
         try{
@@ -314,13 +329,46 @@ public class investigation {
             }
             TestEntry.TE_Cat.removeItemAt(0);
         }
-        catch(SQLException e){}
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(null,e);
+        }
         finally{
             try{
             rs.close();
             pst.close();
             }
-            catch(SQLException e){}
+            catch(SQLException e){
+                JOptionPane.showMessageDialog(null,e);
+            }
+        }
+        return f == 1;
+    }
+    
+    public boolean fillCat2(){
+        int f = 0;
+        try{
+            TestSel.TS_Cat.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Dep" }));
+            String name, sql="Select * from category";
+            pst=conn.prepareStatement(sql);
+            rs=pst.executeQuery();
+            while(rs.next()){
+                name=rs.getString("Name");
+                TestSel.TS_Cat.addItem(name);
+                f = 1;                
+            }
+            TestSel.TS_Cat.removeItemAt(0);
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(null,e);
+        }
+        finally{
+            try{
+            rs.close();
+            pst.close();
+            }
+            catch(SQLException e){
+                JOptionPane.showMessageDialog(null,e);
+            }
         }
         return f == 1;
     }
@@ -398,4 +446,31 @@ public class investigation {
         }
     }
 
+        
+//    public boolean setTestNames(){
+//        String sql;
+//        int i = 0;
+//        String[] temp = new String[TestSel.NoOfTests]; 
+//        try{
+//            sql="Select Name from investigations";
+//            pst=conn.prepareStatement(sql);
+//            rs=pst.executeQuery();
+//            while(rs.next()){
+//               temp[i] = rs.getString("Name");
+//               i++;
+//            }
+//            TestSel.testname = temp;
+//            return true;
+//        }
+//        catch(SQLException e){JOptionPane.showMessageDialog(null, e);}
+//        finally{
+//            try{
+//                rs.close();
+//                pst.close();
+//            }
+//            catch(Exception e){}
+//        }
+//        return false;
+//    }
+//  
 }

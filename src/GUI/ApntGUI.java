@@ -3,11 +3,13 @@ package GUI;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import mrms.Appointment;
 import mrms.Doctor;
 
 public class ApntGUI extends javax.swing.JFrame {
     
     Doctor d = new Doctor();
+    Appointment app = new Appointment();
     int dcode;
     public static Object[][] data = new Object[0][3];
     public static Object[][] Shifts = new Object[3][0];
@@ -208,6 +210,8 @@ public class ApntGUI extends javax.swing.JFrame {
         initComponents();
         setVisible(true);
         setLocationRelativeTo(null);
+        if(!app.addData(dcode))
+            JOptionPane.showMessageDialog(null,"No Appointments");
     }
     
 //    String getDay(){

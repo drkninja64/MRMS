@@ -4,20 +4,33 @@
 
 package mrms;
 import GUI.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class MRMS {
 
     public static void main(String[] args) {
-        /**
-         * Initialize
-         */
-        TestType.fillCat();
+        /* Windows look and feel */
+        try {
+            UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MRMS.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(MRMS.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(MRMS.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(MRMS.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        new ApntGUI("1","Deepak Mahara");
+        //new ApntGUI("1","Deepak Mahara");
         //new TestEntry("TCDC");
-        //mainPage.mainGUI();
-        //LoginGUI.loginStart();
-        //PatientEntry.patientEGUI();
+        //new mainPage();
+        //new TestSel();
+        new ReportGUI();
+        //new TestEntry();
     }
     
 }
