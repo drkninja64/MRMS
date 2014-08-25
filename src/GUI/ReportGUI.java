@@ -2,11 +2,15 @@
 package GUI;
 
 import java.awt.Dimension;
+import java.util.Date;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import mrms.Patient;
 import mrms.Report;
 
 
@@ -16,24 +20,42 @@ public class ReportGUI extends javax.swing.JFrame {
     public static int NoOfTest;
     public static String SelectedTest;
     public static String Comment;
-    String RepNo;
+    String RepNo,PCode;
     Report rep = new Report();
+    boolean editing;
 
+
+    boolean[] Tsub;       
+    JLabel[] TName = new JLabel[NoOfTest];
+    JFormattedTextField[] TVal = new JFormattedTextField[NoOfTest];
+    JTextField[] TRange = new JTextField[NoOfTest];
+    JTextField[] TChild = new JTextField[NoOfTest];
+    JScrollPane[] TScroll = new JScrollPane [NoOfTest];
+    JTextArea[] TSpecial = new JTextArea[NoOfTest];
+    JSeparator[] TSep = new JSeparator[NoOfTest];
+        
+        
+    
     public ReportGUI() {
         //NoOfTest = 5;
         //SelectedTest = "a::b::c::d::e";
         NoOfTest = 1;
         SelectedTest = "Blood Group";
-        new ReportGUI("3","1");
+        mainPage.RE = new ReportGUI("3","1");
     }
     
     public ReportGUI(String pcode,String rno){
         initComponents();
-        RE_PCode.setText(pcode);
+        PCode = pcode;
+        RE_PCode.setText(PCode);
         RepNo = rno;
+        boolean val = rep.setData(PCode,RepNo);
         this.setTitle("Report No. " + rno);
+        editing = false;
         setData();
+        intialize();
         addnew();
+        if(val) setValues();
         setVisible(true);
         setLocationRelativeTo(null);
     }
@@ -59,6 +81,11 @@ public class ReportGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Report");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         ScrollPane.setPreferredSize(new java.awt.Dimension(410, 432));
 
@@ -76,6 +103,11 @@ public class ReportGUI extends javax.swing.JFrame {
         scroller.setViewportView(ScrollPane);
 
         RE_Save.setText("Save");
+        RE_Save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RE_SaveActionPerformed(evt);
+            }
+        });
 
         RE_Cancel.setText("Cancel");
         RE_Cancel.addActionListener(new java.awt.event.ActionListener() {
@@ -172,21 +204,22 @@ public class ReportGUI extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_RE_selTestActionPerformed
 
+    private void RE_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RE_SaveActionPerformed
+        if(editing) setEdit(false);
+        else saveData();
+    }//GEN-LAST:event_RE_SaveActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        SelectedTest = "";
+        NoOfTest = 0;
+    }//GEN-LAST:event_formWindowClosed
+
     private void addnew(){
         //Initialize Components
         int PanHeight, PanWidth = 410; 
         int Xpos = 7, Ypos = 5;
         int pat = rep.getPatientSex(RE_PCode.getText());
-        
-        JLabel[] TName = new JLabel[NoOfTest];
-        JTextField[] TVal = new JTextField[NoOfTest];
-        JTextField[] TRange = new JTextField[NoOfTest];
-        JTextField[] TChild = new JTextField[NoOfTest];
-        JScrollPane[] TScroll = new JScrollPane [NoOfTest];
-        JTextArea[] TSpecial = new JTextArea[NoOfTest];
-        JSeparator[] TSep = new JSeparator[NoOfTest];
-        
-        
+
         /* Add Labels */
             JLabel L1 = new JLabel("Name :");
             L1.setLocation(Xpos, Ypos);
@@ -228,10 +261,11 @@ public class ReportGUI extends javax.swing.JFrame {
                 ScrollPane.add(TName[i]);
                 //Increase X position
                 Xpos = Xpos + 105;
-
-                if(Data[0].equals("0")){
+                Tsub[i] = Data[0].equals("0");
+                if(Tsub[i]){
                     //Set Value Box
-                    TVal[i] = new JTextField();
+                    TVal[i] = new JFormattedTextField();
+                    TVal[i].setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("0.###"))));
                     TVal[i].setText("");
                     TVal[i].setSize(100, 23);
                     TVal[i].setLocation(Xpos,Ypos);
@@ -349,6 +383,63 @@ public class ReportGUI extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void setData() {
+        if(NoOfTest == 0) return;
         RE_Test = SelectedTest.split("::");
+    }
+
+    private void setEdit(boolean state) {
+        if(state) RE_Save.setText("Edit");
+        else RE_Save.setText("Save");
+        
+    }
+
+    private void saveData() {
+        if (NoOfTest == 0){
+            JOptionPane.showMessageDialog(null,"No Investigations selected!","ERROR",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        boolean saved = false;
+        Report save = new Report();
+        String date = ((JTextField)RE_Date.getDateEditor().getUiComponent()).getText();
+        //JOptionPane.showMessageDialog(null, date); /*
+        if(save.saveReport(RepNo,PCode,date,SelectedTest,Comment,1)){
+            for(int i=0; i<NoOfTest; i++){
+                String tname = TName[i].getText();
+                String cname = save.getCName(tname);
+                save.saveTests(RepNo,PCode,cname);
+                String value; 
+                if(Tsub[i]) value = TVal[i].getText();
+                else value = TSpecial[i].getText();
+                saved = save.saveTestValue(RepNo, PCode, tname, cname, value, Tsub[i]);
+                if (!saved) break;
+            }
+            if(saved) {
+                JOptionPane.showMessageDialog(null, "Information Saved!");
+                PatientEntry.setTable();
+                new Patient().setReports();
+                this.dispose();
+            }
+            else JOptionPane.showMessageDialog(null,"Error in save process","ERROR",JOptionPane.ERROR_MESSAGE);
+        }  //*/
+    }
+
+    private void intialize() {
+        TName = new JLabel[NoOfTest];
+        TVal = new JFormattedTextField[NoOfTest];
+        TRange = new JTextField[NoOfTest];
+        TChild = new JTextField[NoOfTest];
+        TScroll = new JScrollPane [NoOfTest];
+        TSpecial = new JTextArea[NoOfTest];
+        TSep = new JSeparator[NoOfTest];
+        Tsub = new boolean[NoOfTest];
+        RE_Date.setDate(new Date());
+        RE_Date.setDateFormatString(RE_Date.getDateFormatString());
+    }
+
+    private void setValues() {
+        for (int i = 0; i<NoOfTest; i++){
+            if(Tsub[i]) TVal[i].setText(rep.getValue(TName[i].getText(),PCode,RepNo,Tsub[i]));
+            else TSpecial[i].setText(rep.getValue(TName[i].getText(),PCode,RepNo,Tsub[i]));
+        }
     }
 }

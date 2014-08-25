@@ -15,6 +15,7 @@ import mrms.Encryption;
  */
 public class LoginGUI extends javax.swing.JFrame {
 
+    public static String CurrentUser = "Potato";
     /**
      * Creates new form LoginGUI
      */
@@ -151,6 +152,7 @@ public class LoginGUI extends javax.swing.JFrame {
     
     public void loginNow(){
         String username=LoginUN.getText();
+        CurrentUser = username;
         String passcode=LoginPW.getText();
         Encryption ende =new Encryption();
         ende.encryptdecrypt(this,username,passcode);

@@ -27,7 +27,9 @@ public class TestSel extends javax.swing.JFrame {
         rep = report;
         RepNo = rn;
         TS_code.setText(pcode);
-        addModel(SelTest.split("::"));
+        if(ReportGUI.NoOfTest != 0) {
+            addModel(SelTest.split("::"));
+        }
         inv.fillCat2();
     }
     
@@ -186,14 +188,14 @@ public class TestSel extends javax.swing.JFrame {
     }//GEN-LAST:event_TS_CatItemStateChanged
 
     private void TS_OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TS_OKActionPerformed
-        if(model2.isEmpty()){
-            this.dispose();
-        } 
-        else {
+//        if(model2.isEmpty()){
+//            this.dispose();
+//        } 
+//        else {
             saveData();
             this.dispose();
             if(rep) new ReportGUI(TS_code.getText(), RepNo);
-        }
+//        }
     }//GEN-LAST:event_TS_OKActionPerformed
 
     private void TS_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TS_CancelActionPerformed
@@ -202,9 +204,13 @@ public class TestSel extends javax.swing.JFrame {
     }//GEN-LAST:event_TS_CancelActionPerformed
 
     void saveData(){
+        String selected;
         // Get to report
         ReportGUI.NoOfTest = model2.size();
-        String selected = SetFormat.setStyle(model2);
+        if(ReportGUI.NoOfTest != 0){
+            selected = SetFormat.setStyle(model2);
+        }
+        else selected = "";
         ReportGUI.SelectedTest = selected;
         //JOptionPane.showMessageDialog(rootPane,selected);
     }

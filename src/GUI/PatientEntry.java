@@ -12,8 +12,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import mrms.Patient;
 
 
@@ -22,17 +25,31 @@ import mrms.Patient;
  * @author lovelyruchi
  */
 public class PatientEntry extends javax.swing.JFrame {
+
+    static void setTable() {
+        
+        PE_ReportTable.setModel(new DefaultTableModel(reports,new String[]{"Report No.","Date","Status"}){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+            return false; //all cells false
+            }
+        });
+        PE_ReportTable.setVisible(true);
+    }
+    
     Connection conn=null;
     ResultSet rs=null;
     PreparedStatement pst=null;
     Patient p = new Patient();
     int gender = 1;
     public static boolean existing = false;
+    public static Object[][] reports = new Object[0][3];
     /**
      * Creates new form PatientEntry
      */
     public PatientEntry() {
         initialize();
+        
         PE_MaleB.setSelected(true);
         setCode();
         PE_PFName.requestFocusInWindow();
@@ -40,6 +57,8 @@ public class PatientEntry extends javax.swing.JFrame {
     
     public PatientEntry(String pcode) {
         initialize();
+        PE_PFName.requestFocusInWindow();
+        existing = true;
         fillData(pcode);
     }
 
@@ -67,9 +86,6 @@ public class PatientEntry extends javax.swing.JFrame {
         PE_PEmail = new javax.swing.JTextField();
         PE_Age = new javax.swing.JTextField();
         PE_ContactNo = new javax.swing.JTextField();
-        PE_SelectTests = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
         PE_Reports = new javax.swing.JPanel();
         PE_RepAdd = new javax.swing.JButton();
         PE_RepDel = new javax.swing.JButton();
@@ -91,10 +107,17 @@ public class PatientEntry extends javax.swing.JFrame {
         PE_SamplesBN = new javax.swing.JButton();
         PE_NewBN = new javax.swing.JButton();
         PE_ExistBN = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        PE_DateAdded = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Patient Entry");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setText("Code :");
 
@@ -142,36 +165,32 @@ public class PatientEntry extends javax.swing.JFrame {
         PE_infoPanelLayout.setHorizontalGroup(
             PE_infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(PE_infoPanelLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(PE_infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(PE_infoPanelLayout.createSequentialGroup()
-                        .addContainerGap()
                         .addGroup(PE_infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(PE_infoPanelLayout.createSequentialGroup()
-                                .addGroup(PE_infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(FNlabel)
-                                    .addComponent(LNlabel)
-                                    .addComponent(jLabel7))
-                                .addGap(18, 18, 18)
-                                .addGroup(PE_infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(PE_ContactNo, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(PE_PLName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(PE_PMName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(PE_PFName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(PE_PEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(PE_infoPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(18, 18, 18)
-                                .addComponent(PE_MaleB)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PE_FemaleB)
-                                .addGap(18, 18, 18)
-                                .addComponent(Agelabel)
-                                .addGap(18, 18, 18)
-                                .addComponent(PE_Age, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jLabel3)
+                            .addComponent(FNlabel)
+                            .addComponent(LNlabel)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8))
+                        .addGap(18, 18, 18)
+                        .addGroup(PE_infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(PE_ContactNo, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PE_PLName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PE_PMName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PE_PFName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PE_PEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(PE_infoPanelLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel8)))
+                        .addComponent(jLabel5)
+                        .addGap(18, 18, 18)
+                        .addComponent(PE_MaleB)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PE_FemaleB)
+                        .addGap(18, 18, 18)
+                        .addComponent(Agelabel)
+                        .addGap(18, 18, 18)
+                        .addComponent(PE_Age, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         PE_infoPanelLayout.setVerticalGroup(
@@ -209,34 +228,14 @@ public class PatientEntry extends javax.swing.JFrame {
 
         PE_infoPanelLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {PE_PFName, PE_PLName, PE_PMName});
 
-        PE_SelectTests.setBorder(javax.swing.BorderFactory.createTitledBorder("Test Reports"));
-
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Biochemistry", "Haematology" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane2.setViewportView(jList1);
-
-        javax.swing.GroupLayout PE_SelectTestsLayout = new javax.swing.GroupLayout(PE_SelectTests);
-        PE_SelectTests.setLayout(PE_SelectTestsLayout);
-        PE_SelectTestsLayout.setHorizontalGroup(
-            PE_SelectTestsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PE_SelectTestsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2)
-                .addContainerGap())
-        );
-        PE_SelectTestsLayout.setVerticalGroup(
-            PE_SelectTestsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PE_SelectTestsLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         PE_Reports.setBorder(javax.swing.BorderFactory.createTitledBorder("Report List"));
 
         PE_RepAdd.setText("Add");
+        PE_RepAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PE_RepAddActionPerformed(evt);
+            }
+        });
 
         PE_RepDel.setText("Delete");
 
@@ -252,7 +251,7 @@ public class PatientEntry extends javax.swing.JFrame {
                 {null, null, null}
             },
             new String [] {
-                "S.No.", "Date", "Selected Investigations"
+                "S.No.", "Date", "Status"
             }
         ) {
             Class[] types = new Class [] {
@@ -283,7 +282,7 @@ public class PatientEntry extends javax.swing.JFrame {
             .addGroup(PE_ReportsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(PE_ReportsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PE_RTScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(PE_RTScroll)
                     .addGroup(PE_ReportsLayout.createSequentialGroup()
                         .addComponent(PE_RepAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -321,7 +320,7 @@ public class PatientEntry extends javax.swing.JFrame {
             }
         });
 
-        PE_DoctorBox.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        PE_DoctorBox.setBorder(javax.swing.BorderFactory.createTitledBorder("Doctor Info"));
 
         jLabel10.setText("Qualifications :");
 
@@ -382,6 +381,7 @@ public class PatientEntry extends javax.swing.JFrame {
 
         PE_SamplePNL.setBorder(javax.swing.BorderFactory.createTitledBorder("Sample"));
 
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel11.setText("Collected / not collected");
 
         PE_SamplesBN.setText("Samples Required");
@@ -392,23 +392,38 @@ public class PatientEntry extends javax.swing.JFrame {
             PE_SamplePNLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(PE_SamplePNLLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(PE_SamplePNLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel11)
-                    .addComponent(PE_SamplesBN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(PE_SamplePNLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PE_SamplesBN, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         PE_SamplePNLLayout.setVerticalGroup(
             PE_SamplePNLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(PE_SamplePNLLayout.createSequentialGroup()
                 .addComponent(jLabel11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(PE_SamplesBN)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         PE_NewBN.setText("New");
+        PE_NewBN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PE_NewBNActionPerformed(evt);
+            }
+        });
 
         PE_ExistBN.setText("Existing");
+        PE_ExistBN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PE_ExistBNActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Date Added :");
+
+        PE_DateAdded.setEditable(false);
+        PE_DateAdded.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter()));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -419,6 +434,10 @@ public class PatientEntry extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(PE_Code, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(PE_DateAdded, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(PE_NewBN, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -426,26 +445,25 @@ public class PatientEntry extends javax.swing.JFrame {
                 .addGap(25, 25, 25))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addComponent(PE_infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(PE_SelectTests, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(4, 4, 4))
-                    .addComponent(PE_sepa, javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PE_sepa)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 5, Short.MAX_VALUE)
+                        .addGap(4, 4, 4)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(PE_Reports, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(PE_DoctorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(PE_infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PE_SamplePNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(PE_Save, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(PE_Cancel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(PE_DoctorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(PE_SamplePNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(PE_Cancel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(PE_Save, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -456,28 +474,30 @@ public class PatientEntry extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(PE_Code, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(PE_NewBN)
-                    .addComponent(PE_ExistBN))
+                    .addComponent(PE_ExistBN)
+                    .addComponent(jLabel2)
+                    .addComponent(PE_DateAdded, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(PE_sepa, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PE_infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PE_SelectTests, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(PE_SamplePNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(PE_DoctorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(PE_Save)
-                        .addGap(18, 18, 18)
-                        .addComponent(PE_Cancel)
-                        .addGap(10, 10, 10)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(PE_Reports, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(PE_DoctorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, Short.MAX_VALUE)
+                                .addComponent(PE_Save)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(PE_Cancel)
+                                .addGap(28, 28, 28))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PE_SamplePNL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(PE_infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(PE_Reports, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
-
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {PE_SelectTests, PE_infoPanel});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -506,6 +526,24 @@ public class PatientEntry extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_PE_CancelActionPerformed
 
+    private void PE_RepAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PE_RepAddActionPerformed
+        addNewReport();
+    }//GEN-LAST:event_PE_RepAddActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        existing = false;
+    }//GEN-LAST:event_formWindowClosed
+
+    private void PE_ExistBNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PE_ExistBNActionPerformed
+        mainPage.PS = new PatientSearch();
+        mainPage.PE.dispose();
+    }//GEN-LAST:event_PE_ExistBNActionPerformed
+
+    private void PE_NewBNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PE_NewBNActionPerformed
+        mainPage.PE.dispose();
+        mainPage.PE = new PatientEntry();
+    }//GEN-LAST:event_PE_NewBNActionPerformed
+
     /**
      * Save Data
      */
@@ -517,6 +555,7 @@ public class PatientEntry extends javax.swing.JFrame {
         String age=PE_Age.getText();
         String contact=PE_ContactNo.getText();
         String email=PE_PEmail.getText();
+        String date = PE_DateAdded.getText();
         String doct=(PE_DList.getSelectedItem()).toString();
         String msg = "The following fields are required :\n";
         boolean error = false;
@@ -543,7 +582,7 @@ public class PatientEntry extends javax.swing.JFrame {
             LNlabel.setForeground(new java.awt.Color(0, 0, 0));
         }
         else {
-            if(p.patient_entry(code,fname,mname,lname,gender,age,contact,email,doct))
+            if(p.patient_entry(code,fname,mname,lname,gender,age,contact,email,date,doct))
                 this.dispose();
         }
     }
@@ -597,7 +636,7 @@ public class PatientEntry extends javax.swing.JFrame {
 
                 if (me.getClickCount() == 2) {
                     String id=(PE_ReportTable.getValueAt(row, 0)).toString(); 
-                    new ReportGUI(PE_Code.getText(), id);
+                    mainPage.RE = new ReportGUI(PE_Code.getText(), id);
                 }
             }
         });
@@ -614,6 +653,7 @@ public class PatientEntry extends javax.swing.JFrame {
     private javax.swing.JTextField PE_ContactNo;
     private javax.swing.JComboBox PE_DList;
     private javax.swing.JTextField PE_DQual;
+    private javax.swing.JFormattedTextField PE_DateAdded;
     private javax.swing.JPanel PE_DoctorBox;
     private javax.swing.JButton PE_ExistBN;
     private javax.swing.JRadioButton PE_FemaleB;
@@ -628,12 +668,11 @@ public class PatientEntry extends javax.swing.JFrame {
     private javax.swing.JButton PE_RepDel;
     private javax.swing.JButton PE_RepSearchBN;
     private javax.swing.JTextField PE_RepSearchBox;
-    private javax.swing.JTable PE_ReportTable;
+    public static javax.swing.JTable PE_ReportTable;
     private javax.swing.JPanel PE_Reports;
     private javax.swing.JPanel PE_SamplePNL;
     private javax.swing.JButton PE_SamplesBN;
     private javax.swing.JButton PE_Save;
-    private javax.swing.JPanel PE_SelectTests;
     private javax.swing.ButtonGroup PE_SexSet;
     private javax.swing.JLabel PE_docShift;
     private javax.swing.JPanel PE_infoPanel;
@@ -641,17 +680,20 @@ public class PatientEntry extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList jList1;
-    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 
     private void initialize() {
         initComponents();
+        doubleClickReport();
+        PE_RepDel.setVisible(false);
+        resetReport();
+        PE_DateAdded.setText(new SimpleDateFormat("MMM d, yyyy").format(new Date()));
         setVisible(true);
         setLocationRelativeTo(null);
         conn=mrms.Sql_connection.connecrDb();
@@ -661,7 +703,31 @@ public class PatientEntry extends javax.swing.JFrame {
     private void fillData(String pcode) {
         Patient pt = new Patient();
         pt.getData(pcode);
-        
+        PE_Code.setText(pcode);
+        PE_PFName.setText(pt.FName);
+        PE_PMName.setText(pt.MName);
+        PE_PLName.setText(pt.LName);
+        PE_Age.setText(pt.age+"");
+        if(pt.sex == 1) PE_MaleB.setSelected(true);
+        else PE_FemaleB.setSelected(true);
+        PE_ContactNo.setText(pt.contact);
+        PE_PEmail.setText(pt.email);
+        PE_DateAdded.setText(pt.dateAdded);
+        PE_DList.setSelectedItem(pt.dname);
+        pt.setReports();
+        setTable();
     }
 
+    private void addNewReport() {
+        int RepNo = p.maxReportNo(Integer.parseInt(PE_Code.getText()));
+        RepNo = RepNo + 1;
+        ReportGUI.NoOfTest = 0;
+        mainPage.RE = new ReportGUI(PE_Code.getText(), Integer.toString(RepNo));
+    }
+
+    void resetReport(){
+        reports = new Object[0][3];
+        setTable();
+    }
+    
 }

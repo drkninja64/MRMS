@@ -90,6 +90,11 @@ public class ApntGUI extends javax.swing.JFrame {
         });
 
         AE_save.setText("Save");
+        AE_save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AE_saveActionPerformed(evt);
+            }
+        });
 
         AE_Add.setText("Add");
 
@@ -201,6 +206,10 @@ public class ApntGUI extends javax.swing.JFrame {
     private void AE_DaysItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_AE_DaysItemStateChanged
         setLabel();
     }//GEN-LAST:event_AE_DaysItemStateChanged
+
+    private void AE_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AE_saveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_AE_saveActionPerformed
 
     /**
      * Initializes GUI

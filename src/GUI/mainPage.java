@@ -4,7 +4,8 @@
 
 package GUI;
 
-import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -20,17 +21,41 @@ import mrms.MySqlToXls;
  * @author Sajag
  */
 public class mainPage extends JFrame {
-int flag;
-public static String filename;
-static File dir = null;
-//DoctorList dlist=new DoctorList();
-public static int for_shift;
+    /* All the JFrames */
+    public static PatientEntry PE;
+    public static PatientSearch PS;
+    public static DoctorList DL;
+    public static DoctorEntry DE;
+    public static ReportGUI RE;
+    
+    int flag;
+    public static String filename;
+    static File dir = null;
+    //DoctorList dlist=new DoctorList();
+    public static int for_shift;
     public mainPage() {
         initComponents();
         setVisible(true);
         setLocationRelativeTo(null);
+        closecall();
     }
 
+    private void closecall(){
+        this.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent evt) {
+                onExit();
+            }
+        });
+    }
+    public void onExit() {
+        int i = JOptionPane.showConfirmDialog(this, "Do you want to logout "+LoginGUI.CurrentUser+"?",
+                "Exit",JOptionPane.YES_NO_OPTION);
+        //JOptionPane.showMessageDialog(null, i);
+        if(i==0){
+            System.exit(0);
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -45,15 +70,12 @@ public static int for_shift;
         Main_doctor = new javax.swing.JMenu();
         Main_DocEntry = new javax.swing.JMenuItem();
         Main_DocList = new javax.swing.JMenuItem();
-        Main_report = new javax.swing.JMenu();
-        Main_AddTest = new javax.swing.JMenuItem();
         Main_users = new javax.swing.JMenu();
         Main_AddUser = new javax.swing.JMenuItem();
         Main_investigation = new javax.swing.JMenu();
         cat_entry = new javax.swing.JMenuItem();
         cat_view = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        viewInv = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         Main_data = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -64,7 +86,7 @@ public static int for_shift;
 
         jMenu1.setText("jMenu1");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("MRMS");
         setResizable(false);
 
@@ -125,19 +147,6 @@ public static int for_shift;
 
         Main_MenuBar.add(Main_doctor);
 
-        Main_report.setText("Report");
-
-        Main_AddTest.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-        Main_AddTest.setText("Add/Modify Tests");
-        Main_AddTest.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Main_AddTestActionPerformed(evt);
-            }
-        });
-        Main_report.add(Main_AddTest);
-
-        Main_MenuBar.add(Main_report);
-
         Main_users.setText("Users");
 
         Main_AddUser.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_MASK));
@@ -169,14 +178,6 @@ public static int for_shift;
         });
         Main_investigation.add(cat_view);
         Main_investigation.add(jSeparator1);
-
-        viewInv.setText("View Investigations");
-        viewInv.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewInvActionPerformed(evt);
-            }
-        });
-        Main_investigation.add(viewInv);
 
         jMenuItem1.setText("Edit Samples");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -249,7 +250,7 @@ public static int for_shift;
 
     private void Main_DocEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_DocEntryActionPerformed
         flag=1;
-        DoctorEntry docentry=new DoctorEntry();
+        DE = new DoctorEntry();
         
     }//GEN-LAST:event_Main_DocEntryActionPerformed
 
@@ -259,21 +260,16 @@ public static int for_shift;
         cu.setVisible(true);
     }//GEN-LAST:event_Main_AddUserActionPerformed
 
-    private void Main_AddTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_AddTestActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_Main_AddTestActionPerformed
-
     private void Main_PEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_PEntryActionPerformed
         // TODO add your handling code here:
-        new PatientEntry();
+        PE = new PatientEntry();
     }//GEN-LAST:event_Main_PEntryActionPerformed
 
     private void Main_DocListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_DocListActionPerformed
         for_shift=1;
         
-       DoctorList dlist=new DoctorList();
-       //dlist.dlt=dlist;
-        dlist.setVisible(true);
+       DL = new DoctorList();
+
     }//GEN-LAST:event_Main_DocListActionPerformed
 
     private void cat_entryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cat_entryActionPerformed
@@ -287,10 +283,6 @@ public static int for_shift;
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         new SampleAdd();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void viewInvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewInvActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_viewInvActionPerformed
 
     private void Main_excelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Main_excelActionPerformed
         JFileChooser fileChooser = new JFileChooser();
@@ -382,7 +374,6 @@ public static int for_shift;
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem Main_AddTest;
     private javax.swing.JMenuItem Main_AddUser;
     private javax.swing.JMenuItem Main_DocEntry;
     private javax.swing.JMenuItem Main_DocList;
@@ -396,7 +387,6 @@ public static int for_shift;
     private javax.swing.JMenuItem Main_import;
     private javax.swing.JMenu Main_investigation;
     private javax.swing.JMenu Main_patient;
-    private javax.swing.JMenu Main_report;
     private javax.swing.JMenuItem Main_sql;
     private javax.swing.JMenu Main_users;
     private javax.swing.JMenuItem Menu_exit;
@@ -407,6 +397,5 @@ public static int for_shift;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JMenuItem viewInv;
     // End of variables declaration//GEN-END:variables
 }

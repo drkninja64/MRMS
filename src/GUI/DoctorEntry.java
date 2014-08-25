@@ -416,7 +416,7 @@ static int sh_add;
     private void DE_ShAddKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_DE_ShAddKeyPressed
         if (evt.getKeyCode()==KeyEvent.VK_ENTER){
             passid=DE_Code.getText();
-            Shift sh=new Shift(passid);
+            Shift sh=new Shift(passid,this);
         }
         else if (evt.getKeyCode()==KeyEvent.VK_RIGHT) DE_ShRemove.requestFocusInWindow();
      
@@ -485,8 +485,9 @@ static int sh_add;
     private void DE_ShAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DE_ShAddActionPerformed
         // TODO add your handling code here:
         passid=DE_Code.getText();
-        Shift sh=new Shift(passid);
+        Shift sh=new Shift(passid,this);
         sh_add=1;
+        //this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }//GEN-LAST:event_DE_ShAddActionPerformed
 
     private void DE_ShClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DE_ShClearActionPerformed
@@ -519,41 +520,6 @@ static int sh_add;
             a++;
         }
         data=temp;
-    }
-    
- 
-    public static void docEntryGUI() {
-        
-       
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DoctorEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DoctorEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DoctorEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DoctorEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new DoctorEntry().setVisible(true);
-            }
-        });
     }
     
     public void setCode(){

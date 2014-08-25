@@ -7,6 +7,7 @@
 package mrms;
 import GUI.ApntGUI;
 import GUI.DoctorEntry;
+import GUI.mainPage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,12 +45,12 @@ public class Doctor {
     public String getDName(int dcode){
         String sql;
         try{
-            sql = "SELECT Name FROM doctor WHERE DCode = (?)";
+            sql = "SELECT DName AS name FROM doctor WHERE DCode = (?)";
             pst=conn.prepareStatement(sql);
             pst.setInt(1,dcode);
             rs = pst.executeQuery();
             rs.next();
-            return rs.getString("Name");
+            return rs.getString("name");
         }
         catch(Exception e) {
             JOptionPane.showMessageDialog(null,"get doctor name:\n" + e);
@@ -304,8 +305,8 @@ public class Doctor {
                         data=temp1;
                     }
                         
-                    DoctorEntry doc= new DoctorEntry();
-                    doc.fill(id,rs.getString("DName"),rs.getString("DQual"),rs.getString("DWork"),rs.getString("DContact"),rs.getString("DEmail"),data);
+                    mainPage.DE = new DoctorEntry();
+                    mainPage.DE.fill(id,rs.getString("DName"),rs.getString("DQual"),rs.getString("DWork"),rs.getString("DContact"),rs.getString("DEmail"),data);
               //      break;
             
             //}

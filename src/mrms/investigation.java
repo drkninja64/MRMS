@@ -426,7 +426,7 @@ public class investigation {
             pst.execute();
             JOptionPane.showMessageDialog(null,"Information Saved!");
             try{
-                sql = "CREATE TABLE " + Name + " ( Rno int(5) not null, PCode int(5) not null, primary key(Rno,PCode),foreign key (Rno,PCode) references Report(Rno,PCode) on delete cascade)";
+                sql = "CREATE TABLE " + Name.replaceAll(" ", "_").toLowerCase() + " ( Rno int(5) not null, PCode int(5) not null, primary key(Rno,PCode),foreign key (Rno,PCode) references Report(Rno,PCode) on delete cascade)";
                 pst=conn.prepareStatement(sql);
                 pst.execute();
             }

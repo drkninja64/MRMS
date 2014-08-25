@@ -27,9 +27,11 @@ public class MRMS {
         
         //new ApntGUI("1","Deepak Mahara");
         //new TestEntry("TCDC");
-        //new mainPage();
+        new mainPage();
+        //new PatientEntry("3");
+        //new PatientSearch();
         //new TestSel("1","TCDC::LDL");
-        new ReportGUI();
+        //new ReportGUI();
         //new TestEntry();
     }
     

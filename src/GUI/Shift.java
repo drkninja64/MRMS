@@ -8,10 +8,13 @@ package GUI;
 import GUI.DoctorEntry;
 import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -28,20 +31,42 @@ public class Shift extends javax.swing.JFrame {
      Connection conn=null;
     ResultSet rs=null;
     PreparedStatement pst=null;
+    JFrame fr;
     public Shift() {
         initComponents();
         conn=Sql_connection.connecrDb();
     }
     
     //Doctor call constructor
-    public Shift(String a) {
+    public Shift(String a,JFrame f) {
+        
         initComponents();
+        
+       
         conn=Sql_connection.connecrDb();
         setVisible(true);
         this.setLocationRelativeTo(null);
         setLocation((int)getLocation().getX(), (int)(getLocation().getY()-50));
         Shift_day.requestFocusInWindow();
         DID.setText(a);
+        fr=f;
+        f.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        closecall();
+        
+    }
+    public void closecall(){
+        this.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent evt) {
+                onExit();
+            }
+        });
+    }
+    public void onExit() {
+       // int i=JOptionPane.showConfirmDialog(this, "Do you want to Exit?");
+       // if(i==0){
+        this.dispose();
+        fr.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+       // }
     }
 
     @SuppressWarnings("unchecked")
@@ -63,6 +88,7 @@ public class Shift extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New Shift");
+        setAlwaysOnTop(true);
         setResizable(false);
 
         jLabel1.setText("ID:");
