@@ -7,10 +7,7 @@
 package mrms;
 import GUI.ApntGUI;
 import GUI.DoctorEntry;
-import GUI.DoctorList;
-import GUI.mainPage;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,6 +39,29 @@ public class Doctor {
     public Doctor(){
         conn=mrms.Sql_connection.connecrDb();
        // data=null;
+    }
+    
+    public String getDName(int dcode){
+        String sql;
+        try{
+            sql = "SELECT Name FROM doctor WHERE DCode = (?)";
+            pst=conn.prepareStatement(sql);
+            pst.setInt(1,dcode);
+            rs = pst.executeQuery();
+            rs.next();
+            return rs.getString("Name");
+        }
+        catch(Exception e) {
+            JOptionPane.showMessageDialog(null,"get doctor name:\n" + e);
+        }
+        finally{
+            try{
+            rs.close();
+            pst.close();
+        }
+            catch(Exception e){}
+        }
+        return "";
     }
     
     /**
@@ -245,8 +265,8 @@ public class Doctor {
      * @param id 
      */
     public void view_doc_info(String id){
-       
-           try{
+  
+        try{
             Object[][] temp1 = new Object[0][3];
             int i=0;     
            

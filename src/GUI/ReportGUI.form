@@ -47,11 +47,15 @@
                       <EmptySpace min="117" pref="49" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="jButton1" linkSize="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="RE_Comment" linkSize="1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="RE_Save" linkSize="1" min="-2" pref="84" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="RE_Cancel" linkSize="1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="RE_selTest" linkSize="1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="RE_Cancel" linkSize="1" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
@@ -68,20 +72,21 @@
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="RE_PCode" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="RE_Valid" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="RE_Comment" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="RE_Cancel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="RE_selTest" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="RE_Date" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="scroller" max="32767" attributes="0"/>
+              <Component id="scroller" min="-2" pref="435" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -102,12 +107,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="454" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="456" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="432" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="433" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -151,10 +156,18 @@
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="RE_Date">
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="RE_Comment">
       <Properties>
         <Property name="text" type="java.lang.String" value="Comment"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="RE_selTest">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Select Test"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RE_selTestActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

@@ -34,7 +34,7 @@ public class DoctorList extends javax.swing.JFrame {
     static int len = 0;
     static Object[][] data = new Object[0][4];
     static Doctor doc = new Doctor();
-   public DoctorList dlt;
+    public DoctorList dlt;
     
     /**
      * Creates new form DoctorList
@@ -58,22 +58,24 @@ public class DoctorList extends javax.swing.JFrame {
     
     public void viewData(){
         VD_Table.addMouseListener(new MouseAdapter() {
-             
-        public void mousePressed(MouseEvent me) {
-            JTable table =(JTable) me.getSource();
-            Point p = me.getPoint();
-            int row = table.rowAtPoint(p);
-           
-            if (me.getClickCount() == 2) {
-                String id=(VD_Table.getValueAt(row, 0)).toString(); 
-                Doctor doc1=new Doctor();
-                doc1.view_doc_info(id);
+            public void mousePressed(MouseEvent me) {
+                JTable table =(JTable) me.getSource();
+                Point p = me.getPoint();
+                int row = table.rowAtPoint(p);
+
+                if (me.getClickCount() == 2) {
+                    String id=(VD_Table.getValueAt(row, 0)).toString(); 
+                    Doctor doc1=new Doctor();
+                    doc1.view_doc_info(id);
+                }
             }
-        }
-       
-    });
+        });
     }
 
+    public final JFrame getMainFrame(){
+        return this;
+    }
+    
     public static void setTableData(){
         VD_Table.setModel(new DefaultTableModel(data,new String[]{"ID","Name","Qualification","Days"}){
             @Override
@@ -287,12 +289,6 @@ public class DoctorList extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       DoctorList d=new DoctorList();
-        this.dispose();
-        d.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void VD_DocIDKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_VD_DocIDKeyReleased
         VD_Name.setText("");
         String docid=VD_DocID.getText();
@@ -326,6 +322,12 @@ public class DoctorList extends javax.swing.JFrame {
     private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
         setTableData();
     }//GEN-LAST:event_formWindowStateChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        DoctorList d=new DoctorList();
+        this.dispose();
+        d.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     public static void docViewGUI() {
         /* Set the Nimbus look and feel */

@@ -5,11 +5,15 @@
  */
 
 package GUI;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import mrms.Patient;
 
 
@@ -23,18 +27,20 @@ public class PatientEntry extends javax.swing.JFrame {
     PreparedStatement pst=null;
     Patient p = new Patient();
     int gender = 1;
+    public static boolean existing = false;
     /**
      * Creates new form PatientEntry
      */
     public PatientEntry() {
-        initComponents();
-        setVisible(true);
-        setLocationRelativeTo(null);
-        setCode();
-        conn=mrms.Sql_connection.connecrDb();
-        fillDoc();
+        initialize();
         PE_MaleB.setSelected(true);
+        setCode();
         PE_PFName.requestFocusInWindow();
+    }
+    
+    public PatientEntry(String pcode) {
+        initialize();
+        fillData(pcode);
     }
 
     @SuppressWarnings("unchecked")
@@ -66,7 +72,6 @@ public class PatientEntry extends javax.swing.JFrame {
         jList1 = new javax.swing.JList();
         PE_Reports = new javax.swing.JPanel();
         PE_RepAdd = new javax.swing.JButton();
-        PE_RepEdit = new javax.swing.JButton();
         PE_RepDel = new javax.swing.JButton();
         PE_RepSearchBox = new javax.swing.JTextField();
         PE_RepSearchBN = new javax.swing.JButton();
@@ -233,8 +238,6 @@ public class PatientEntry extends javax.swing.JFrame {
 
         PE_RepAdd.setText("Add");
 
-        PE_RepEdit.setText("Edit");
-
         PE_RepDel.setText("Delete");
 
         PE_RepSearchBox.setText("Days");
@@ -284,8 +287,6 @@ public class PatientEntry extends javax.swing.JFrame {
                     .addGroup(PE_ReportsLayout.createSequentialGroup()
                         .addComponent(PE_RepAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PE_RepEdit)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(PE_RepDel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(PE_RepSearchBox, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -298,7 +299,6 @@ public class PatientEntry extends javax.swing.JFrame {
             .addGroup(PE_ReportsLayout.createSequentialGroup()
                 .addGroup(PE_ReportsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(PE_RepAdd)
-                    .addComponent(PE_RepEdit)
                     .addComponent(PE_RepDel)
                     .addComponent(PE_RepSearchBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(PE_RepSearchBN))
@@ -473,9 +473,8 @@ public class PatientEntry extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(PE_Cancel)
                         .addGap(10, 10, 10)))
-                .addGap(26, 26, 26)
-                .addComponent(PE_Reports, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(PE_Reports, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {PE_SelectTests, PE_infoPanel});
@@ -504,7 +503,7 @@ public class PatientEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_PE_AppointBNActionPerformed
 
     private void PE_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PE_CancelActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_PE_CancelActionPerformed
 
     /**
@@ -564,12 +563,12 @@ public class PatientEntry extends javax.swing.JFrame {
     }
         
     //Sets Code
-    public void setCode(){
+    private void setCode(){
         PE_Code.setText(p.newCode());
     }
     
     //Fills Combo Box with doc names
-    public void fillDoc(){
+    private void fillDoc(){
         try{
             String sql="Select * from doctor";
             pst=conn.prepareStatement(sql);
@@ -589,6 +588,21 @@ public class PatientEntry extends javax.swing.JFrame {
         }
     }
 
+    public void doubleClickReport(){
+        PE_ReportTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent me) {
+                JTable table =(JTable) me.getSource();
+                Point p = me.getPoint();
+                int row = table.rowAtPoint(p);
+
+                if (me.getClickCount() == 2) {
+                    String id=(PE_ReportTable.getValueAt(row, 0)).toString(); 
+                    new ReportGUI(PE_Code.getText(), id);
+                }
+            }
+        });
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Agelabel;
     private javax.swing.JLabel FNlabel;
@@ -612,7 +626,6 @@ public class PatientEntry extends javax.swing.JFrame {
     private javax.swing.JScrollPane PE_RTScroll;
     private javax.swing.JButton PE_RepAdd;
     private javax.swing.JButton PE_RepDel;
-    private javax.swing.JButton PE_RepEdit;
     private javax.swing.JButton PE_RepSearchBN;
     private javax.swing.JTextField PE_RepSearchBox;
     private javax.swing.JTable PE_ReportTable;
@@ -636,5 +649,19 @@ public class PatientEntry extends javax.swing.JFrame {
     private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
+
+    private void initialize() {
+        initComponents();
+        setVisible(true);
+        setLocationRelativeTo(null);
+        conn=mrms.Sql_connection.connecrDb();
+        fillDoc();
+    }
+
+    private void fillData(String pcode) {
+        Patient pt = new Patient();
+        pt.getData(pcode);
+        
+    }
 
 }

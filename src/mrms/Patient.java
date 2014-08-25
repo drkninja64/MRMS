@@ -18,14 +18,53 @@ import javax.swing.JTextField;
  * @author lovelyruchi
  */
 public class Patient {
-     Connection conn=null;
-     ResultSet rs=null;
-     PreparedStatement pst=null;
+    Connection conn=null;
+    ResultSet rs=null;
+    PreparedStatement pst=null;
+    public String FName;
+    public String LName;
+    public String MName;
+    public int age;
+    public int sex;
+    public String contact;
+    public String email;
+    public String dname;
      
-     public Patient(){
-         conn=mrms.Sql_connection.connecrDb();
-     }
+    public Patient(){
+        conn=mrms.Sql_connection.connecrDb();
+    }
      
+    public boolean getData(String pcode){
+        try{
+            Doctor d = new Doctor();
+            String sql="Select * from patient where PCode=?";
+            pst=conn.prepareStatement(sql);
+            pst.setInt(1, Integer.parseInt(pcode));
+            rs=pst.executeQuery();
+            rs.next();
+            age = rs.getInt("Age");
+            sex = rs.getInt("Sex");
+            FName = rs.getString("FName");
+            MName = rs.getString("MName");
+            LName = rs.getString("LName");
+            contact = rs.getString("PContact");
+            email = rs.getString("PEmail");
+            dname = d.getDName(rs.getInt("DCode"));
+            return true;
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, "patient getdata\n" + e);
+        }  
+        finally{
+            try{
+            rs.close();
+            pst.close();
+            }
+            catch(Exception e){}
+        }
+        return false;
+    }
+    
     public int setQual(JTextField txtbox, String set){
         //Sets Qualification for doctor
         String qual;

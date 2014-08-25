@@ -14,14 +14,29 @@ public class TestSel extends javax.swing.JFrame {
     investigation inv = new investigation();
     DefaultListModel model = new DefaultListModel();
     DefaultListModel model2 = new DefaultListModel();
+    boolean rep ;
+    String RepNo;
     
     public TestSel() {
-        initComponents();
-        setVisible(true);
-        setLocationRelativeTo(null);
+        initialize();
         inv.fillCat2();
-        doubleClick();
-        //makeBoxes();
+    }
+    
+    public TestSel(String pcode, String SelTest, boolean report, String rn){
+        initialize();
+        rep = report;
+        RepNo = rn;
+        TS_code.setText(pcode);
+        addModel(SelTest.split("::"));
+        inv.fillCat2();
+    }
+    
+    public TestSel(String pcode){
+        new TestSel(pcode,"",false,"1");
+    }
+    
+    public TestSel(String pcode, String SelTest){
+        new TestSel(pcode,SelTest,false,"1");
     }
 
     @SuppressWarnings("unchecked")
@@ -38,7 +53,8 @@ public class TestSel extends javax.swing.JFrame {
         TS_Cancel = new javax.swing.JButton();
         TS_OK = new javax.swing.JButton();
         TS_Cat = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        TS_code = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Select Investigations");
@@ -110,7 +126,9 @@ public class TestSel extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Department :");
+        jLabel2.setText("Code :");
+
+        TS_code.setEditable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -125,10 +143,11 @@ public class TestSel extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(TS_Cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(TS_Cat, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TS_code, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(TS_Cat, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -140,7 +159,8 @@ public class TestSel extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(TS_Cat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel2)
+                    .addComponent(TS_code, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(4, 4, 4)
                 .addComponent(TS_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -166,24 +186,32 @@ public class TestSel extends javax.swing.JFrame {
     }//GEN-LAST:event_TS_CatItemStateChanged
 
     private void TS_OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TS_OKActionPerformed
-        saveData();
+        if(model2.isEmpty()){
+            this.dispose();
+        } 
+        else {
+            saveData();
+            this.dispose();
+            if(rep) new ReportGUI(TS_code.getText(), RepNo);
+        }
     }//GEN-LAST:event_TS_OKActionPerformed
 
     private void TS_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TS_CancelActionPerformed
-        this.dispose();
+        this.dispose();       
+        if(rep) new ReportGUI(TS_code.getText(), RepNo);
     }//GEN-LAST:event_TS_CancelActionPerformed
 
     void saveData(){
         // Get to report
         ReportGUI.NoOfTest = model2.size();
         String selected = SetFormat.setStyle(model2);
-        JOptionPane.showMessageDialog(rootPane,selected);
+        ReportGUI.SelectedTest = selected;
+        //JOptionPane.showMessageDialog(rootPane,selected);
     }
     
     void remove(){
         int i = TS_listSel.getSelectedIndex();
         if(i >= 0){
-            //JOptionPane.showMessageDialog(rootPane, SS_list1.getSelectedIndex());
             model2.removeElementAt(i);
             refreshLists();
             fill();
@@ -297,13 +325,28 @@ public class TestSel extends javax.swing.JFrame {
     private javax.swing.JButton TS_Cancel;
     public static javax.swing.JComboBox TS_Cat;
     private javax.swing.JButton TS_OK;
+    private javax.swing.JTextField TS_code;
     private javax.swing.JButton TS_inBN;
     private javax.swing.JList TS_listChoose;
     private javax.swing.JList TS_listSel;
     private javax.swing.JButton TS_outBN;
     private javax.swing.JPanel TS_panel;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
+
+    private void initialize() {
+        initComponents();
+        setVisible(true);
+        setLocationRelativeTo(null);
+        doubleClick();
+    }
+
+    private void addModel(String[] split) {
+        model2.removeAllElements();
+        for(int i =0; i<split.length; i++){
+            model2.addElement(split[i]);
+        }
+    }
 }
