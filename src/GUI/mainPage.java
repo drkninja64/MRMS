@@ -67,6 +67,7 @@ public class mainPage extends JFrame {
         Menu_exit = new javax.swing.JMenuItem();
         Main_patient = new javax.swing.JMenu();
         Main_PEntry = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         Main_doctor = new javax.swing.JMenu();
         Main_DocEntry = new javax.swing.JMenuItem();
         Main_DocList = new javax.swing.JMenuItem();
@@ -123,6 +124,14 @@ public class mainPage extends JFrame {
         });
         Main_patient.add(Main_PEntry);
 
+        jMenuItem2.setText("View List");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        Main_patient.add(jMenuItem2);
+
         Main_MenuBar.add(Main_patient);
 
         Main_doctor.setText("Doctor");
@@ -137,7 +146,7 @@ public class mainPage extends JFrame {
         Main_doctor.add(Main_DocEntry);
 
         Main_DocList.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
-        Main_DocList.setText("List");
+        Main_DocList.setText("View List");
         Main_DocList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Main_DocListActionPerformed(evt);
@@ -366,6 +375,10 @@ public class mainPage extends JFrame {
         }
     }//GEN-LAST:event_Main_importActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        PS = new PatientSearch();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
    
     public void addSQL(String fn){
         if(fn.contains(".sql")) return;
@@ -396,6 +409,7 @@ public class mainPage extends JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     // End of variables declaration//GEN-END:variables
 }

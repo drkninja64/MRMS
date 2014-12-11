@@ -33,6 +33,7 @@ public class Createuser extends javax.swing.JFrame {
      */
     public Createuser() {
         initComponents();
+        setLocationRelativeTo(null);
          conn =Sql_connection.connecrDb();
        
     }
@@ -188,6 +189,7 @@ public class Createuser extends javax.swing.JFrame {
             pst.execute();
             
             JOptionPane.showMessageDialog(null,"User Registered!");
+            this.dispose();
         }
         catch(Exception e){
              JOptionPane.showMessageDialog(null,e);

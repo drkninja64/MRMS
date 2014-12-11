@@ -25,14 +25,8 @@ public class MRMS {
             Logger.getLogger(MRMS.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        //new ApntGUI("1","Deepak Mahara");
-        //new TestEntry("TCDC");
-        new mainPage();
-        //new PatientEntry("3");
-        //new PatientSearch();
-        //new TestSel("1","TCDC::LDL");
-        //new ReportGUI();
-        //new TestEntry();
+ 
+        new LoginGUI();
     }
     
 }

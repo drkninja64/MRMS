@@ -342,6 +342,18 @@ public class Patient {
             catch(Exception e){}
         }
     }
+
+    public String fullName() {
+        String name = FName + " ";
+        if(!MName.isEmpty()) name = name + MName + " ";
+        name = name + LName;
+        return name;
+    }
+
+    public String gender() {
+        if (sex == 1) return "Male";
+        else return "Female";
+    }
     
    
 }

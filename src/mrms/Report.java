@@ -129,8 +129,14 @@ public class Report {
             pst=conn.prepareStatement(sql);
             pst.setInt(2,Integer.parseInt(RepNo));
             pst.setInt(3,Integer.parseInt(PCode));
-            if(b) pst.setFloat(1,Float.parseFloat(value));
-            else pst.setString(1,(value));
+            if(b) {
+                if(value.isEmpty()) value = "0";
+                pst.setFloat(1,Float.parseFloat(value));
+            }
+            else {
+                if(value.isEmpty()) value = "-";
+                pst.setString(1,(value));
+            }
             pst.execute();
             return true;
         }
@@ -228,6 +234,10 @@ public class Report {
         }
             catch(Exception e){}
         }     
+        return "";
+    }
+
+    public String getSelTest(String PCode, String RNo) {
         return "";
     }
     

@@ -48,17 +48,17 @@ public class PatientEntry extends javax.swing.JFrame {
      * Creates new form PatientEntry
      */
     public PatientEntry() {
+        existing = false;
         initialize();
-        
         PE_MaleB.setSelected(true);
         setCode();
         PE_PFName.requestFocusInWindow();
     }
     
     public PatientEntry(String pcode) {
+        existing = true;
         initialize();
         PE_PFName.requestFocusInWindow();
-        existing = true;
         fillData(pcode);
     }
 
@@ -93,6 +93,7 @@ public class PatientEntry extends javax.swing.JFrame {
         PE_RepSearchBN = new javax.swing.JButton();
         PE_RTScroll = new javax.swing.JScrollPane();
         PE_ReportTable = new javax.swing.JTable();
+        PE_Print = new javax.swing.JButton();
         PE_Save = new javax.swing.JButton();
         PE_Cancel = new javax.swing.JButton();
         PE_DoctorBox = new javax.swing.JPanel();
@@ -275,6 +276,13 @@ public class PatientEntry extends javax.swing.JFrame {
             PE_ReportTable.getColumnModel().getColumn(2).setResizable(false);
         }
 
+        PE_Print.setText("Print");
+        PE_Print.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PE_PrintActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout PE_ReportsLayout = new javax.swing.GroupLayout(PE_Reports);
         PE_Reports.setLayout(PE_ReportsLayout);
         PE_ReportsLayout.setHorizontalGroup(
@@ -284,15 +292,20 @@ public class PatientEntry extends javax.swing.JFrame {
                 .addGroup(PE_ReportsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(PE_RTScroll)
                     .addGroup(PE_ReportsLayout.createSequentialGroup()
-                        .addComponent(PE_RepAdd)
+                        .addComponent(PE_RepAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(PE_RepDel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PE_Print)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(PE_RepSearchBox, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(PE_RepSearchBN)))
                 .addContainerGap())
         );
+
+        PE_ReportsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {PE_Print, PE_RepAdd, PE_RepDel});
+
         PE_ReportsLayout.setVerticalGroup(
             PE_ReportsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(PE_ReportsLayout.createSequentialGroup()
@@ -300,7 +313,8 @@ public class PatientEntry extends javax.swing.JFrame {
                     .addComponent(PE_RepAdd)
                     .addComponent(PE_RepDel)
                     .addComponent(PE_RepSearchBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PE_RepSearchBN))
+                    .addComponent(PE_RepSearchBN)
+                    .addComponent(PE_Print))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(PE_RTScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -544,6 +558,12 @@ public class PatientEntry extends javax.swing.JFrame {
         mainPage.PE = new PatientEntry();
     }//GEN-LAST:event_PE_NewBNActionPerformed
 
+    private void PE_PrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PE_PrintActionPerformed
+        int x = PE_ReportTable.getSelectedRow();
+        if(x!=-1)
+        new PrintGUI(PE_Code.getText(),reports[x][0].toString()) ;
+    }//GEN-LAST:event_PE_PrintActionPerformed
+
     /**
      * Save Data
      */
@@ -663,6 +683,7 @@ public class PatientEntry extends javax.swing.JFrame {
     private javax.swing.JTextField PE_PFName;
     private javax.swing.JTextField PE_PLName;
     private javax.swing.JTextField PE_PMName;
+    private javax.swing.JButton PE_Print;
     private javax.swing.JScrollPane PE_RTScroll;
     private javax.swing.JButton PE_RepAdd;
     private javax.swing.JButton PE_RepDel;
@@ -690,6 +711,8 @@ public class PatientEntry extends javax.swing.JFrame {
 
     private void initialize() {
         initComponents();
+        PE_RepAdd.setEnabled(existing);
+        PE_Print.setEnabled(existing);
         doubleClickReport();
         PE_RepDel.setVisible(false);
         resetReport();

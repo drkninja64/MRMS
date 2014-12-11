@@ -33,6 +33,7 @@ public class ReportGUI extends javax.swing.JFrame {
     JScrollPane[] TScroll = new JScrollPane [NoOfTest];
     JTextArea[] TSpecial = new JTextArea[NoOfTest];
     JSeparator[] TSep = new JSeparator[NoOfTest];
+    private boolean old;
         
         
     
@@ -55,7 +56,9 @@ public class ReportGUI extends javax.swing.JFrame {
         setData();
         intialize();
         addnew();
+        old = false;
         if(val) setValues();
+        setEdit();
         setVisible(true);
         setLocationRelativeTo(null);
     }
@@ -205,8 +208,7 @@ public class ReportGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_RE_selTestActionPerformed
 
     private void RE_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RE_SaveActionPerformed
-        if(editing) setEdit(false);
-        else saveData();
+        saveData();
     }//GEN-LAST:event_RE_SaveActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
@@ -387,9 +389,11 @@ public class ReportGUI extends javax.swing.JFrame {
         RE_Test = SelectedTest.split("::");
     }
 
-    private void setEdit(boolean state) {
-        if(state) RE_Save.setText("Edit");
-        else RE_Save.setText("Save");
+    private void setEdit() {
+        boolean n = !old;
+        RE_selTest.setEnabled(n);
+        RE_Date.setEnabled(n);
+        RE_Comment.setEnabled(n);
         
     }
 
@@ -399,14 +403,19 @@ public class ReportGUI extends javax.swing.JFrame {
             return;
         }
         boolean saved = false;
+        boolean report = true;
         Report save = new Report();
         String date = ((JTextField)RE_Date.getDateEditor().getUiComponent()).getText();
         //JOptionPane.showMessageDialog(null, date); /*
-        if(save.saveReport(RepNo,PCode,date,SelectedTest,Comment,1)){
+        if(!old) report = save.saveReport(RepNo,PCode,date,SelectedTest,Comment,1);
+        if(report){
             for(int i=0; i<NoOfTest; i++){
                 String tname = TName[i].getText();
                 String cname = save.getCName(tname);
-                save.saveTests(RepNo,PCode,cname);
+                if (!old) {
+                    save.saveTests(RepNo,PCode,cname);
+                    old = true;
+                }
                 String value; 
                 if(Tsub[i]) value = TVal[i].getText();
                 else value = TSpecial[i].getText();
@@ -415,8 +424,10 @@ public class ReportGUI extends javax.swing.JFrame {
             }
             if(saved) {
                 JOptionPane.showMessageDialog(null, "Information Saved!");
-                PatientEntry.setTable();
-                new Patient().setReports();
+                Patient pt = new Patient();
+                pt.PCode=Integer.parseInt(PCode);
+                pt.setReports();
+                mainPage.PE.setTable();
                 this.dispose();
             }
             else JOptionPane.showMessageDialog(null,"Error in save process","ERROR",JOptionPane.ERROR_MESSAGE);
@@ -440,6 +451,7 @@ public class ReportGUI extends javax.swing.JFrame {
         for (int i = 0; i<NoOfTest; i++){
             if(Tsub[i]) TVal[i].setText(rep.getValue(TName[i].getText(),PCode,RepNo,Tsub[i]));
             else TSpecial[i].setText(rep.getValue(TName[i].getText(),PCode,RepNo,Tsub[i]));
+            old = true;
         }
     }
 }
